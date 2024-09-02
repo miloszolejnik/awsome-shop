@@ -4,36 +4,31 @@
 echo '🏗️👷 Styling, testing, and building your project before committing'
 
 # Check Prettier standards
-npm run check-format ||
+npx prettier --check '**/*.{js,jsx,ts,tsx,json,css,md}' ||
 (
-    echo '🤢🤮🤢🤮 Your code is not formatted correctly. 🤢🤮🤢🤮
-    Prettier Check Failed. Run `npm run format`, add changes, and try to commit again.'
+    echo '🤢🤮🤢🤮 Your code is not formatted correctly. 🤢🤮🤢🤮'
+    echo 'Run `npm run format`, add changes, and try to commit again.'
     exit 1
 )
 
 # Check ESLint Standards
-npm run check-lint ||
-(
-    echo '😤🏀👋😤 Your code has ESLint issues. 😤🏀👋😤
-    ESLint Check Failed. Fix the issues listed above, add changes, and try to commit again.'
+npx eslint --ext .js,.jsx,.ts,.tsx || (
+    echo '😤🏀👋😤 ESLint Check Failed. Fix the issues and try to commit again.'
     exit 1
 )
 
-# Check TypeScript Types (if applicable)
-npm run check-types ||
-(
-    echo '🤡😂❌🤡 TypeScript type check failed. 🤡😂❌🤡
-    Make the changes required to fix the type errors before committing.'
+# Check tsconfig standards
+npx tsc --noEmit || (
+    echo '🤡😂❌🤡 TypeScript check failed. Make the changes required.'
     exit 1
 )
 
-# Build the project
-npm run build ||
-(
-    echo '❌👷🔨❌ Build failed. ❌👷🔨❌
-    The build failed: View the errors above to see why.'
+# Build
+echo '🤔🤔🤔🤔... Alright.... Code looks good to me... Trying to build now. 🤔🤔🤔🤔'
+npx next build || (
+    echo '❌👷🔨❌ Build failed. Check the errors above.'
     exit 1
 )
 
-# Success message
-echo '✅✅✅✅ All checks passed. Committing changes now. ✅✅✅✅'
+# If everything passes, commit
+echo '✅✅✅✅ You win this time... I am committing this now. ✅✅✅✅'
