@@ -6,27 +6,27 @@ echo '🏗️👷 Styling, testing, and building your project before committing'
 # Check Prettier standards
 npx prettier --check '**/*.{js,jsx,ts,tsx,json,css,md}' ||
 (
-    echo '🤢🤮🤢🤮 Your code is not formatted correctly. 🤢🤮🤢🤮'
+    echo 'Your code is not formatted correctly.'
     echo 'Run `npm run format`, add changes, and try to commit again.'
     exit 1
 )
 
 # Check ESLint Standards
 npx eslint --ext .js,.jsx,.ts,.tsx || (
-    echo '😤🏀👋😤 ESLint Check Failed. Fix the issues and try to commit again.'
+    echo 'ESLint Check Failed. Fix the issues and try to commit again.'
     exit 1
 )
 
 # Check tsconfig standards
 npx tsc --noEmit || (
-    echo '🤡😂❌🤡 TypeScript check failed. Make the changes required.'
+    echo 'TypeScript check failed. Make the changes required.'
     exit 1
 )
 
 # Build
-echo '🤔🤔🤔🤔... Alright.... Code looks good to me... Trying to build now. 🤔🤔🤔🤔'
+echo '... Alright.... Code looks good to me... Trying to build now.'
 npx next build || (
-    echo '❌👷🔨❌ Build failed. Check the errors above.'
+    echo '👷 Build failed. Check the errors above.'
     exit 1
 )
 
