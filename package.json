@@ -18,6 +18,8 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@auth/core": "^0.34.2",
+    "@auth/drizzle-adapter": "^1.4.2",
     "@neondatabase/serverless": "^0.9.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
