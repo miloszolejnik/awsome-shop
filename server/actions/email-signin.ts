@@ -25,6 +25,5 @@ export const emailSignIn = safeActionClient
     //   return { error: 'Incorrect password' };
     // }
 
-    console.log(email, password, code);
     return { success: email };
   });

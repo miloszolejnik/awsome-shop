@@ -1,0 +1,1 @@
+ALTER TABLE "email_verification_token" ADD COLUMN "email" text NOT NULL;
