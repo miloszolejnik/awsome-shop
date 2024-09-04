@@ -15,6 +15,13 @@
       "when": 1725363736884,
       "tag": "0001_needy_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1725448786318,
+      "tag": "0002_complete_spitfire",
+      "breakpoints": true
     }
   ]
 }
