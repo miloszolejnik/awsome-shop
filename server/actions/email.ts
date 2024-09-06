@@ -19,3 +19,17 @@ export const sentVeryficationEmail = async (email: string, token: string) => {
   if (error) return error;
   return data;
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const confirmLink = `${domain}/auth/new-verification?token=${token}`;
+
+  const { data, error } = await resend.emails.send({
+    from: 'Acme <onboarding@resend.dev>',
+    to: ['milosz.olejnik@tuta.io'],
+    subject: 'Awsome Shop - Reset yout password',
+    html: `<p>Click to <a href="${confirmLink}">Rest your password</a></p>`,
+  });
+
+  if (error) return error;
+  return data;
+};
