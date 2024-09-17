@@ -11,4 +11,5 @@ export default async function SettingsPage() {
   if (session) {
     return <SettingsCard session={session} />;
   }
+  return <div></div>;
 }

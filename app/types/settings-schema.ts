@@ -6,7 +6,7 @@ export const SettingsSchema = zod
       zod.string().min(3, 'Name must be at least 3 characters long')
     ),
     image: zod.optional(zod.string().url()),
-    isTwoFactorEnabled: zod.optional(zod.boolean()),
+    TwoFactorEnabled: zod.optional(zod.boolean()),
     email: zod.optional(zod.string().email()),
     password: zod.optional(zod.string().min(8)),
     newPassword: zod.optional(zod.string().min(8)),
