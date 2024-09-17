@@ -74,14 +74,20 @@ export const UserButton = ({ user }: Session) => {
           </span>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="group py-2 font-medium cursor-pointer transition-all duration-500">
+        <DropdownMenuItem
+          onClick={() => router.push('/dashboard/orders')}
+          className="group py-2 font-medium cursor-pointer"
+        >
           <TruckIcon
             size={14}
             className="mr-2 group-hover:-translate-x-1 transition-all duration-500 ease-in-out"
           />
           My Orders
         </DropdownMenuItem>
-        <DropdownMenuItem className="group py-2 font-medium cursor-pointer transition-all duration-500">
+        <DropdownMenuItem
+          className="group py-2 font-medium cursor-pointer"
+          onClick={() => router.push('/dashboard/settings')}
+        >
           <Settings
             size={14}
             className="mr-2 group-hover:rotate-180 transition-all duration-300 ease-in-out"
@@ -89,7 +95,7 @@ export const UserButton = ({ user }: Session) => {
           Settings
         </DropdownMenuItem>
         {theme && (
-          <DropdownMenuItem className="py-2 font-medium cursor-pointer transition-all duration-500">
+          <DropdownMenuItem className="py-2 font-medium cursor-pointer">
             <div
               className="flex items-center group gap-2"
               onClick={(e) => e.stopPropagation()}
@@ -122,7 +128,7 @@ export const UserButton = ({ user }: Session) => {
         )}
         <DropdownMenuItem
           onClick={() => signOut()}
-          className="group hover:bg-destructive/30 py-2 font-medium cursor-pointer transition-all duration-500"
+          className="group hover:bg-destructive/30 py-2 font-medium cursor-pointer"
         >
           <LogOut
             size={14}
