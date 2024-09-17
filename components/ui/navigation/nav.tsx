@@ -11,7 +11,11 @@ export default async function Nav() {
       <nav>
         <ul className="flex justify-between items-center">
           <li>
-            <Link href={'/'} className="flex font-Lobster font-semibold gap-2" aria-label='Home'>
+            <Link
+              href={'/'}
+              className="flex font-Lobster font-semibold gap-2"
+              aria-label="Home"
+            >
               <h1>Awsome</h1>
               <h1>Shop</h1>
             </Link>

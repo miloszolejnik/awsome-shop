@@ -5,6 +5,7 @@ import './globals.css';
 import React from 'react';
 import Nav from '@/components/ui/navigation/nav';
 import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/providers/theam-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,10 +20,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'px-6 md:px-12 max-w-7xl mx-auto')}>
-        <Nav />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+        >
+          <Nav />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
