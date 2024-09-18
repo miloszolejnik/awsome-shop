@@ -4,15 +4,20 @@ import { LoginSchema } from '@/app/types/login-schema';
 import { safeActionClient } from '@/lib/safe-action-client';
 import { db } from '..';
 import { eq } from 'drizzle-orm';
-import { users } from '../schema';
-import { generateEmailVeryficationToken } from './tokens';
-import { sentVeryficationEmail } from './email';
+import { twoFactorTokens, users } from '../schema';
+import {
+  generateEmailVeryficationToken,
+  generateTwoFactorToken,
+  getTwoFactoreCodeByCode,
+  getTwoFactoreCodeByEmail,
+} from './tokens';
+import { sendTwoFactorTokenByEmail, sentVeryficationEmail } from './email';
 import { signIn } from '../auth';
 import { AuthError } from 'next-auth';
 
 export const emailSignIn = safeActionClient
   .schema(LoginSchema)
-  .action(async ({ parsedInput: { email, password } }) => {
+  .action(async ({ parsedInput: { email, password, code } }) => {
     try {
       const existingUser = await db.query.users.findFirst({
         where: eq(users.email, email),
@@ -30,6 +35,36 @@ export const emailSignIn = safeActionClient
           verificationToken[0].token
         );
         return { success: 'verification email sent', error: 'not verified' };
+      }
+
+      if (existingUser.twoFactorEnabled && existingUser.email) {
+        if (code) {
+          const twoFactorToken = await getTwoFactoreCodeByEmail(
+            existingUser.email
+          );
+          if (!twoFactorToken) {
+            return { error: 'invalid code' };
+          }
+          if (twoFactorToken.token !== code) {
+            return { error: 'invalid code' };
+          }
+
+          const hasExpired = new Date() > new Date(twoFactorToken.expires);
+
+          if (hasExpired) return { error: 'token expired' };
+
+          await db
+            .delete(twoFactorTokens)
+            .where(eq(twoFactorTokens.id, twoFactorToken.id));
+        } else {
+          const token = await generateTwoFactorToken(existingUser.email);
+
+          if (!token) {
+            return { error: 'Something went wrong, please contat us' };
+          }
+          await sendTwoFactorTokenByEmail(token[0].email, token[0].token);
+          return { twoFactor: 'TwoFactor code has been send!' };
+        }
       }
 
       await signIn('credentials', {

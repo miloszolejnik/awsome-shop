@@ -62,6 +62,8 @@ export default function SettingsCard(session: SettingsFormType) {
   });
 
   const onSubmit = (values: zod.infer<typeof SettingsSchema>) => {
+    setError(undefined);
+    setSuccess(undefined);
     execute(values);
   };
 
@@ -200,6 +202,8 @@ export default function SettingsCard(session: SettingsFormType) {
                         status === 'executing' ||
                         session.session.user.isOAuth === true
                       }
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />

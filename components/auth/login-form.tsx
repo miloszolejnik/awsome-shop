@@ -9,6 +9,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+
 import { useForm } from 'react-hook-form';
 import { AuthCard } from './auth-card';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,34 +30,45 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { FormSucces } from './form-succes';
 import { FormError } from './form-error';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 export const LoginForm = () => {
-  const form = useForm({
+  const form = useForm<zod.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: '',
       password: '',
+      code: '',
     },
   });
 
-  const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<string>('');
-  const router = useRouter();
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
+  const [showTwoFactor, setShowToFactor] = useState<boolean>(false);
+
   const { execute, status } = useAction(emailSignIn, {
     onSuccess(data) {
       if (data.data?.error) {
+        setSuccess(undefined);
         setError(data.data?.error);
       }
       if (data.data?.success) {
-        router.push('/');
+        setError(undefined);
         setSuccess(data.data?.success);
+        redirect('/');
+      }
+      if (data.data?.twoFactor) {
+        setShowToFactor(true);
       }
     },
   });
 
   const onSubmit = (values: zod.infer<typeof LoginSchema>) => {
-    execute({ email: values.email, password: values.password });
+    execute({
+      email: values.email,
+      password: values.password,
+      code: values.code,
+    });
   };
 
   return (
@@ -64,47 +82,86 @@ export const LoginForm = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Email"
-                        type="email"
-                        autoComplete="email"
-                      />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="********"
-                        type="password"
-                        autoComplete="current-password"
-                      />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {showTwoFactor && (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Your Two Factor Code</FormLabel>
+                      <FormControl>
+                        <InputOTP
+                          disabled={status === 'executing'}
+                          {...field}
+                          maxLength={6}
+                        >
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {!showTwoFactor && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Email"
+                            type="email"
+                            autoComplete="email"
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="********"
+                            type="password"
+                            autoComplete="current-password"
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
               <FormSucces message={success} />
               <FormError message={error} />
-              <Button size={'sm'} variant={'link'} asChild>
+              <Button
+                size={'sm'}
+                className="px-0 my-4"
+                variant={'link'}
+                asChild
+              >
                 <Link href={'/auth/reset'}>Forgot your password?</Link>
               </Button>
             </div>
@@ -115,7 +172,7 @@ export const LoginForm = () => {
                 status === 'executing' ? 'animate-pulse' : ''
               )}
             >
-              {'Login'}
+              {showTwoFactor ? 'Submit' : 'Sign in'}
             </Button>
           </form>
         </Form>
