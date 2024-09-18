@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,6 +29,7 @@ import { FormSucces } from '@/components/auth/form-succes';
 import { useState } from 'react';
 import { useAction } from 'next-safe-action/hooks';
 import { settings } from '@/server/actions/settings';
+import { UploadButton } from '@/app/api/uploadthing/upload';
 type SettingsFormType = {
   session: Session;
 };
@@ -135,6 +135,32 @@ export default function SettingsCard(session: SettingsFormType) {
                         height={42}
                       />
                     )}
+                    <UploadButton
+                      className="scale-75 ut-button:ring-primary ut-button:bg-primary/75 hover:ut-button:bg-primary/100 ut:button:transition-all ut-button:duration-500 ut-label:hidden ut-allowed-content:hidden"
+                      endpoint="avatarUploader"
+                      onUploadBegin={() => {
+                        setAvatarUploading(true);
+                      }}
+                      onUploadError={(error) => {
+                        form.setError('image', {
+                          message: error.message,
+                          type: 'validate',
+                        });
+                        setAvatarUploading(false);
+                        return;
+                      }}
+                      onClientUploadComplete={(res) => {
+                        form.setValue('image', res[0].url);
+                        setAvatarUploading(false);
+                        return;
+                      }}
+                      content={{
+                        button({ ready }) {
+                          if (ready) return <div>Change Avatar</div>;
+                          return <div>Uploading...</div>;
+                        },
+                      }}
+                    />
                   </div>
                   <FormControl>
                     <Input
