@@ -23,6 +23,8 @@ import { Input } from '@/components/ui/input';
 import { DollarSign } from 'lucide-react';
 import Tiptap from './tiptap';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { createProduct } from '@/server/actions/create-product';
 
 export default function ProductForm() {
   const form = useForm<zodProductSchema>({
@@ -33,6 +35,22 @@ export default function ProductForm() {
       price: 0,
     },
   });
+
+  const { execute, status } = useAction(createProduct, {
+    onSuccess: (data) => {
+      if (data.data?.success) {
+        console.log(data.data.success);
+      }
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+
+  async function onSubmit(values: zodProductSchema) {
+    await execute(values);
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -41,10 +59,7 @@ export default function ProductForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form
-            onSubmit={() => console.log(form.getValues())}
-            className="space-y-8"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="title"
@@ -96,7 +111,15 @@ export default function ProductForm() {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button
+              disabled={
+                status === 'executing' ||
+                !form.formState.isValid ||
+                form.formState.isDirty
+              }
+              className="w-full"
+              type="submit"
+            >
               Submit
             </Button>
           </form>
