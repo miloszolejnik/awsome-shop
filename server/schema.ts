@@ -7,8 +7,11 @@ import {
   primaryKey,
   boolean,
   pgEnum,
+  serial,
+  real,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from 'next-auth/adapters';
+import { title } from 'process';
 
 export const RoleEnum = pgEnum('roles', ['user', 'admin']);
 
@@ -24,6 +27,7 @@ export const users = pgTable('user', {
   image: text('image'),
   twoFactorEnabled: boolean('twoFactorEnabled').default(false),
   role: RoleEnum('roles').default('user'),
+  created: timestamp('created', { mode: 'date' }).defaultNow(),
 });
 
 export const accounts = pgTable(
@@ -101,3 +105,11 @@ export const twoFactorTokens = pgTable(
     }),
   })
 );
+
+export const products = pgTable('products', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  price: real('price').notNull(),
+  created: timestamp('creted', { mode: 'date' }).defaultNow(),
+});
