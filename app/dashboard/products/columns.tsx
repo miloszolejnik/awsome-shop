@@ -7,14 +7,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
+import { VariantsWithImagesTags } from '@/lib/infer-type';
 import { deleteProduct } from '@/server/actions/delete-product';
 import { ColumnDef, Row } from '@tanstack/react-table';
-import { MoreHorizontalIcon } from 'lucide-react';
+import { MoreHorizontalIcon, PlusCircle, PlusCircleIcon } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
 import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import ProductVariant from './product-variant';
 
 export type Payment = {
   id: string;
@@ -29,7 +38,7 @@ type productColumnType = {
   description: string;
   price: number;
   image: string;
-  variants: any;
+  variants: VariantsWithImagesTags[];
 };
 
 const ActionCell = ({ row }: { row: Row<productColumnType> }) => {
@@ -116,6 +125,51 @@ export const columns: ColumnDef<productColumnType>[] = [
   {
     accessorKey: 'variants',
     header: 'Variants',
+    cell: ({ row }) => {
+      const variants = row.getValue('variants') as VariantsWithImagesTags[];
+      return (
+        <div className="">
+          {variants.map((variant) => (
+            <div key={variant.id}>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ProductVariant
+                      productId={variant.id}
+                      variant={variant}
+                      editMode={true}
+                    >
+                      <div
+                        className="w-5 h-5 rounded-full"
+                        key={variant.id}
+                        style={{ backgroundColor: variant.color }}
+                      />
+                    </ProductVariant>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{variant.productType}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          ))}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-pointer text-primary">
+                  <PlusCircleIcon className="h-4 w-4" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <ProductVariant editMode={false}>
+                  <p>Add new Variant</p>
+                </ProductVariant>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      );
+    },
   },
   {
     id: 'actions',

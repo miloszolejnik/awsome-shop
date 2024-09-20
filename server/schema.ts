@@ -110,45 +110,39 @@ export const twoFactorTokens = pgTable(
 
 export const products = pgTable('products', {
   id: serial('id').primaryKey(),
-  title: text('title').notNull(),
   description: text('description').notNull(),
+  title: text('title').notNull(),
+  created: timestamp('created').defaultNow(),
   price: real('price').notNull(),
-  created: timestamp('creted', { mode: 'date' }).defaultNow(),
 });
 
-export const productVariants = pgTable('product_variants', {
+export const productVariants = pgTable('productVariants', {
   id: serial('id').primaryKey(),
   color: text('color').notNull(),
   productType: text('productType').notNull(),
-  updated: timestamp('updated', { mode: 'date' }).defaultNow(),
-  productId: serial('productId')
+  updated: timestamp('updated').defaultNow(),
+  productID: serial('productID')
     .notNull()
-    .references(() => products.id, {
-      onDelete: 'cascade',
-    }),
+    .references(() => products.id, { onDelete: 'cascade' }),
 });
 
-export const variantImages = pgTable('variant_images', {
+export const variantImages = pgTable('variantImages', {
   id: serial('id').primaryKey(),
   url: text('url').notNull(),
   size: real('size').notNull(),
   name: text('name').notNull(),
   order: real('order').notNull(),
-  productId: serial('productId')
+  variantID: serial('variantID')
     .notNull()
-    .references(() => productVariants.id, {
-      onDelete: 'cascade',
-    }),
+    .references(() => productVariants.id, { onDelete: 'cascade' }),
 });
 
-export const variantTags = pgTable('tags', {
+export const variantTags = pgTable('variantTags', {
   id: serial('id').primaryKey(),
   tag: text('tag').notNull(),
-  variantId: serial('productId')
+  variantID: serial('variantID')
     .notNull()
-    .references(() => productVariants.id, {
-      onDelete: 'cascade',
-    }),
+    .references(() => productVariants.id, { onDelete: 'cascade' }),
 });
 
 export const productRelations = relations(products, ({ many }) => ({
@@ -157,9 +151,9 @@ export const productRelations = relations(products, ({ many }) => ({
 
 export const productVariantsRelations = relations(
   productVariants,
-  ({ one, many }) => ({
+  ({ many, one }) => ({
     product: one(products, {
-      fields: [productVariants.productId],
+      fields: [productVariants.productID],
       references: [products.id],
       relationName: 'productVariants',
     }),
@@ -169,17 +163,17 @@ export const productVariantsRelations = relations(
 );
 
 export const variantImagesRelations = relations(variantImages, ({ one }) => ({
-  productVariant: one(productVariants, {
-    relationName: 'productVariant',
-    fields: [variantImages.productId],
+  productVariants: one(productVariants, {
+    fields: [variantImages.variantID],
     references: [productVariants.id],
+    relationName: 'variantImages',
   }),
 }));
 
 export const variantTagsRelations = relations(variantTags, ({ one }) => ({
-  productVariant: one(productVariants, {
-    relationName: 'variantTags',
-    fields: [variantTags.variantId],
+  productVariants: one(productVariants, {
+    fields: [variantTags.variantID],
     references: [productVariants.id],
+    relationName: 'variantTags',
   }),
 }));
