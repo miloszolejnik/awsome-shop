@@ -5,11 +5,13 @@ import { safeActionClient } from '@/lib/safe-action-client';
 import { db } from '..';
 import { eq } from 'drizzle-orm';
 import { products } from '../schema';
+import { revalidatePath } from 'next/cache';
 
 export const createProduct = safeActionClient
   .schema(ProductsSchema)
   .action(async (data) => {
     try {
+      //EDIT MODE
       if (data.parsedInput.id) {
         const currentProduct = await db.query.products.findFirst({
           where: eq(products.id, data.parsedInput.id),
@@ -26,6 +28,7 @@ export const createProduct = safeActionClient
           })
           .where(eq(products.id, data.parsedInput.id))
           .returning();
+        revalidatePath('/dashboard/products', 'page');
         return {
           success: `Product ${newProduct[0].title} has been updated`,
         };
@@ -36,6 +39,7 @@ export const createProduct = safeActionClient
           title: data.parsedInput.title,
           price: data.parsedInput.price,
         });
+        revalidatePath('/dashboard/products', 'page');
         return {
           success: `Product ${data.parsedInput.title} has been created`,
         };

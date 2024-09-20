@@ -13,6 +13,7 @@ import { MoreHorizontalIcon } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
 import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
+import Link from 'next/link';
 import { toast } from 'sonner';
 
 export type Payment = {
@@ -35,9 +36,11 @@ const ActionCell = ({ row }: { row: Row<productColumnType> }) => {
   const { execute, status } = useAction(deleteProduct, {
     onSuccess(data) {
       if (data.data?.success) {
+        toast.dismiss();
         toast.success(data.data.success);
       }
       if (data.data?.error) {
+        toast.dismiss();
         toast.error(data.data.error);
       }
     },
@@ -55,7 +58,9 @@ const ActionCell = ({ row }: { row: Row<productColumnType> }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem className="dark:focus:bg-primary focus:bg-primary/50 cursor-pointer">
-          Edit Product
+          <Link href={`/dashboard/add-product?id=${product.id}`}>
+            Edit Product
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => execute({ id: product.id })}

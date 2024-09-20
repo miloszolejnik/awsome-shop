@@ -6,6 +6,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { Bold, Italic, List, ListOrdered, Strikethrough } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { Placeholder } from '@tiptap/extension-placeholder';
+import { useEffect } from 'react';
 
 const Tiptap = ({ value }: { value: string }) => {
   const { setValue } = useFormContext();
@@ -43,6 +44,12 @@ const Tiptap = ({ value }: { value: string }) => {
     },
     content: { value },
   });
+
+  useEffect(() => {
+    if (editor?.isEmpty) {
+      editor.commands.setContent(value);
+    }
+  }, [value]);
 
   return (
     <div className="flex flex-col gap-2">
