@@ -5,16 +5,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ColumnDef } from '@tanstack/react-table';
+import { deleteProduct } from '@/server/actions/delete-product';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { MoreHorizontalIcon } from 'lucide-react';
+import { useAction } from 'next-safe-action/hooks';
+import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Payment = {
   id: string;
   amount: number;
@@ -29,6 +29,43 @@ type productColumnType = {
   price: number;
   image: string;
   variants: any;
+};
+
+const ActionCell = ({ row }: { row: Row<productColumnType> }) => {
+  const { execute, status } = useAction(deleteProduct, {
+    onSuccess(data) {
+      if (data.data?.success) {
+        toast.success(data.data.success);
+      }
+      if (data.data?.error) {
+        toast.error(data.data.error);
+      }
+    },
+    onExecute(data) {
+      toast.loading('Deleting product...');
+    },
+  });
+  const product = row.original;
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant={'ghost'} className="p-0 h-8 w-8">
+          <MoreHorizontalIcon className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem className="dark:focus:bg-primary focus:bg-primary/50 cursor-pointer">
+          Edit Product
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => execute({ id: product.id })}
+          className="dark:focus:bg-destructive focus:bg-destructive/50 cursor-pointer"
+        >
+          Delete Product
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 };
 
 export const columns: ColumnDef<productColumnType>[] = [
@@ -51,10 +88,6 @@ export const columns: ColumnDef<productColumnType>[] = [
       }).format(price);
       return <div className="font-medium text-xs">{formatted}</div>;
     },
-  },
-  {
-    accessorKey: 'description',
-    header: 'Description',
   },
   {
     accessorKey: 'image',
@@ -82,25 +115,6 @@ export const columns: ColumnDef<productColumnType>[] = [
   {
     id: 'actions',
     header: 'Actions',
-    cell: ({ row }) => {
-      const product = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant={'ghost'} className="p-0 h-8 w-8">
-              <MoreHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem className="dark:focus:bg-primary focus:bg-primary/50 cursor-pointer">
-              Edit Product
-            </DropdownMenuItem>
-            <DropdownMenuItem className="dark:focus:bg-destructive focus:bg-destructive/50 cursor-pointer">
-              Delete Product
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ActionCell,
   },
 ];

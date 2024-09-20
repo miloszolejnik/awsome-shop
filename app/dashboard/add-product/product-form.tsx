@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -44,8 +43,8 @@ export default function ProductForm() {
   const { execute, status } = useAction(createProduct, {
     onSuccess: (data) => {
       if (data.data?.success) {
-        router.push('/products');
         toast.success(data.data.success);
+        router.push('/dashboard/products');
       }
       if (data.data?.error) {
         toast.error(data.data.error);
