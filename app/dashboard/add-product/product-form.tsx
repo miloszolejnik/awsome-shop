@@ -25,6 +25,8 @@ import Tiptap from './tiptap';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAction } from 'next-safe-action/hooks';
 import { createProduct } from '@/server/actions/create-product';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function ProductForm() {
   const form = useForm<zodProductSchema>({
@@ -34,16 +36,26 @@ export default function ProductForm() {
       description: '',
       price: 0,
     },
+    mode: 'onBlur',
   });
+
+  const router = useRouter();
 
   const { execute, status } = useAction(createProduct, {
     onSuccess: (data) => {
       if (data.data?.success) {
-        console.log(data.data.success);
+        router.push('/products');
+        toast.success(data.data.success);
+      }
+      if (data.data?.error) {
+        toast.error(data.data.error);
       }
     },
     onError: (err) => {
-      console.log(err);
+      toast.error('Something went terrible wrong!');
+    },
+    onExecute: (data) => {
+      toast.loading('Creating product...');
     },
   });
 
@@ -125,9 +137,6 @@ export default function ProductForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
     </Card>
   );
 }

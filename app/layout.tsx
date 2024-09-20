@@ -6,6 +6,7 @@ import React from 'react';
 import Nav from '@/components/ui/navigation/nav';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/providers/theam-provider';
+import Toaster from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           enableSystem={false}
         >
           <Nav />
+          <Toaster />
           {children}
         </ThemeProvider>
       </body>
