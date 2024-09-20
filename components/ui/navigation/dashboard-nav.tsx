@@ -13,7 +13,7 @@ export default function DashboardNav({
   const pathname = usePathname();
 
   return (
-    <nav className="py-2 overflow-auto">
+    <nav className="py-2 mb-2 overflow-auto">
       <ul className="flex gap-6 text-xs font-semibold">
         <AnimatePresence>
           {allLinks.map((link) => (
