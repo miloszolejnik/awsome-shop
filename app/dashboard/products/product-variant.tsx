@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,11 +23,11 @@ import { useForm } from 'react-hook-form';
 import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VariantSchema } from '@/app/types/variant-schema';
+import { InputTags } from './input-tags';
 
 export default function ProductVariant({
   editMode,
   productId,
-  variant,
   children,
 }: {
   editMode: boolean;
@@ -50,21 +49,17 @@ export default function ProductVariant({
   });
 
   function onSubmit(values: zod.infer<typeof VariantSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values);
   }
 
   return (
     <Dialog>
-      <DialogTrigger className="flex gap-2 items-center">
-        {children}
-      </DialogTrigger>
-      <DialogContent>
+      <DialogTrigger>{children}</DialogTrigger>
+      <DialogContent className="lg:max-w-screen-lg overflow-y-scroll max-h-[860px]">
         <DialogHeader>
           <DialogTitle>{editMode ? 'Edit' : 'Create'} your variant</DialogTitle>
           <DialogDescription>
-            Manage your product variants here. You can add tahs, images, and
+            Manage your product variants here. You can add tags, images, and
             more.
           </DialogDescription>
         </DialogHeader>
@@ -82,6 +77,7 @@ export default function ProductVariant({
                       {...field}
                     />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -95,6 +91,7 @@ export default function ProductVariant({
                   <FormControl>
                     <Input type="color" {...field} />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -104,26 +101,40 @@ export default function ProductVariant({
               name="tags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Variant Tags</FormLabel>
-                  <FormControl>{/* <InputTags /> */}</FormControl>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <InputTags {...field} onChange={(e) => field.onChange(e)} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             {/* <VariantImages /> */}
-            {editMode && variant && (
+            <div className="flex gap-4 items-center justify-center">
+              {/* {editMode && variant && (
+                <Button
+                  variant={"destructive"}
+                  type="button"
+                  disabled={variantAction.status === "executing"}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    variantAction.execute({ id: variant.id })
+                  }}
+                >
+                  Delete Variant
+                </Button>
+              )} */}
               <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
+                disabled={
+                  status === 'executing' ||
+                  !form.formState.isValid ||
+                  !form.formState.isDirty
+                }
+                type="submit"
               >
-                Delete Variant
+                {editMode ? 'Update Variant' : 'Create Variant'}
               </Button>
-            )}
-            <Button type="submit">
-              {editMode ? 'Update Variant' : 'Create Variant'}
-            </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>
