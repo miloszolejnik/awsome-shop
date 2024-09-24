@@ -24,8 +24,9 @@ import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VariantSchema } from '@/app/types/variant-schema';
 import { InputTags } from './input-tags';
+import VariantImages from './variant-images';
 
-export default function ProductVariant({
+export const ProductVariant = ({
   editMode,
   productId,
   children,
@@ -34,7 +35,7 @@ export default function ProductVariant({
   productId?: number;
   variant?: VariantsWithImagesTags;
   children: React.ReactNode;
-}) {
+}) => {
   const form = useForm<zod.infer<typeof VariantSchema>>({
     resolver: zodResolver(VariantSchema),
     defaultValues: {
@@ -109,7 +110,7 @@ export default function ProductVariant({
                 </FormItem>
               )}
             />
-            {/* <VariantImages /> */}
+            <VariantImages />
             <div className="flex gap-4 items-center justify-center">
               {/* {editMode && variant && (
                 <Button
@@ -126,9 +127,8 @@ export default function ProductVariant({
               )} */}
               <Button
                 disabled={
-                  status === 'executing' ||
-                  !form.formState.isValid ||
-                  !form.formState.isDirty
+                  // status === 'executing' ||
+                  !form.formState.isValid || !form.formState.isDirty
                 }
                 type="submit"
               >
@@ -140,4 +140,4 @@ export default function ProductVariant({
       </DialogContent>
     </Dialog>
   );
-}
+};

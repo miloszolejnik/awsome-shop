@@ -22,7 +22,7 @@ export const VariantSchema = zod.object({
         url.search('blob:') !== 0,
           { message: 'PLease wait for the image to upload' };
       }),
-      sieze: zod.number(),
+      size: zod.number(),
       key: zod.string().optional(),
       id: zod.number().optional(),
       name: zod.string(),

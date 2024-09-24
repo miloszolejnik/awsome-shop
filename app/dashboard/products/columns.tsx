@@ -23,7 +23,7 @@ import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import ProductVariant from './product-variant';
+import { ProductVariant } from './product-variant';
 
 export type Payment = {
   id: string;
@@ -128,21 +128,21 @@ export const columns: ColumnDef<productColumnType>[] = [
     cell: ({ row }) => {
       const variants = row.getValue('variants') as VariantsWithImagesTags[];
       return (
-        <div className="">
+        <div className="flex gap-2">
           {variants.map((variant) => (
             <div key={variant.id}>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <ProductVariant
-                      productId={variant.id}
+                      productId={variant.productID}
                       variant={variant}
                       editMode={true}
                     >
                       <div
                         className="w-5 h-5 rounded-full"
                         key={variant.id}
-                        style={{ backgroundColor: variant.color }}
+                        style={{ background: variant.color }}
                       />
                     </ProductVariant>
                   </TooltipTrigger>
@@ -156,14 +156,14 @@ export const columns: ColumnDef<productColumnType>[] = [
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="cursor-pointer text-primary">
-                  <PlusCircleIcon className="h-4 w-4" />
+                <span>
+                  <ProductVariant productId={row.original.id} editMode={false}>
+                    <PlusCircle className="h-5 w-5" />
+                  </ProductVariant>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <ProductVariant editMode={false}>
-                  <p>Add new Variant</p>
-                </ProductVariant>
+                <p>Create a new product variant</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
